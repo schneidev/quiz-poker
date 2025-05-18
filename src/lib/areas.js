@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const AREAS_PATH = path.resolve('src/lib/data/areas.json');
+const AREAS_PATH = path.resolve('static/data/areas.json');
 
 export async function loadAreas() {
   const data = await fs.readFile(AREAS_PATH, 'utf-8');

@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const ENTRIES_PATH = path.resolve('src/lib/data/entries.json');
+const ENTRIES_PATH = path.resolve('static/data/entries.json');
 
 export async function loadEntries() {
   const data = await fs.readFile(ENTRIES_PATH, 'utf-8');
