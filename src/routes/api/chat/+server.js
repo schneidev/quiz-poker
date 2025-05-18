@@ -1,14 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { getActivatedAreas } from "$lib/areas"
-import { loadEntries, addEntry } from "$lib/entries"
+import { getAreas } from "$lib/state.svelte.js"
 
 export async function POST({ request }) {
-	await request.json();
+	const { areas } = await request.json();
 
-    const db_entries = await loadEntries()
-
-    const areas = await getActivatedAreas();
-    const area = areas[Math.floor(Math.random() * areas.length)]
+	const filteredAreas = areas.filter((x) => x.activated);
+    const area = filteredAreas[Math.floor(Math.random() * filteredAreas.length)]
 
 	const prompt = `
 Du bist ein Quiz-Generator. Erstelle eine einzige Quizfrage aus dem Bereich ${area.name} die eine Schätzfrage ist. 
@@ -30,9 +27,6 @@ Gib die Ausgabe bitte im folgenden JSON-Format zurück:
 }
 
 Antworte bitte nur mit JSON ohne Erklärungen.
-
-Folgende Fragen wurden schon verwendet und sollen nicht noch einmal verwendet werden:
-${db_entries}
 `;
 
 	const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -63,7 +57,6 @@ ${db_entries}
     reply = JSON.parse(reply);
 
     if (reply !== 'No response') {
-        addEntry(reply.question)
         reply.area = area;
     }
 

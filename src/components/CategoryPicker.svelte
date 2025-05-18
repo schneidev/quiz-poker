@@ -1,25 +1,12 @@
 <script>
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
+	import { getAreas } from '$lib/state.svelte.js';
 
-	let areas = [];
+	let areas = $state([]);
 
-	async function loadAreas() {
-		const res = await fetch('/api/areas');
-		areas = await res.json();
-	}
-
-	async function toggle(area) {
-		// area.activated = !area.activated;
-		await fetch('/api/areas', {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: area.name, activated: area.activated })
-		});
-	}
-
-    onMount(async () => {
-	    loadAreas();
-    });
+	onMount(async () => {
+		areas = getAreas();
+	});
 </script>
 
 <div class="flex w-full flex-row flex-wrap justify-evenly">
@@ -30,7 +17,6 @@
 				id={`area-${index}`}
 				bind:checked={area.activated}
 				class="peer hidden"
-				onchange={() => toggle(area)}
 			/>
 			<label
 				for={`area-${index}`}

@@ -4,6 +4,8 @@
 	import Sidebar from '../components/Sidebar.svelte';
 	import Phase from '../components/Phase.svelte';
 	import Rules from '../components/Rules.svelte';
+import { getAreas } from "$lib/state.svelte.js"
+	import { get } from 'svelte/store';
 
 	const PHASE = {
 		START: 0,
@@ -31,11 +33,10 @@
 			const res = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({})
+				body: JSON.stringify({areas: getAreas()})
 			});
 
 			const data = await res.json();
-			console.log(data);
 
 			area = data.area;
 			question = data.question;
@@ -44,10 +45,6 @@
 
 			stopProgress();
 		}
-
-		console.log(question);
-		console.log(answer);
-		console.log(hints);
 
 		phase += 1;
 		if (phase > PHASE.ANSWER) {
