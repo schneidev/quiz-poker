@@ -4,7 +4,7 @@
 	import Sidebar from '../components/Sidebar.svelte';
 	import Phase from '../components/Phase.svelte';
 	import Rules from '../components/Rules.svelte';
-import { getAreas } from "$lib/state.svelte.js"
+	import { getAreas } from '$lib/state.svelte.js';
 	import { get } from 'svelte/store';
 
 	const PHASE = {
@@ -33,7 +33,7 @@ import { getAreas } from "$lib/state.svelte.js"
 			const res = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({areas: getAreas()})
+				body: JSON.stringify({ areas: getAreas() })
 			});
 
 			const data = await res.json();
@@ -78,7 +78,7 @@ import { getAreas } from "$lib/state.svelte.js"
 	}
 </script>
 
-<div class="mx-auto flex md:w-3/4 w-full flex-col items-center p-4">
+<div class="mx-auto flex w-full flex-col items-center p-4 md:w-3/4">
 	<h1 class="mb-4 font-extrabold text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
 		<span
 			class="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-8xl text-transparent"
@@ -109,33 +109,35 @@ import { getAreas } from "$lib/state.svelte.js"
 				</h5>
 			</div>
 
-			<div class="mt-8 md:mt-0 flex flex-row justify-center">
+			<div class="mt-8 flex flex-row justify-center md:mt-0">
 				{#each hints.slice(0, phase - 1) as hint, i}
 					<div
-						class="m-4 block w-1/3 max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800 "
+						class="m-4 block w-1/3 max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 					>
-						<h5 class="mb-2 xl:text-2xl text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+						<h5
+							class="mb-2 text-xl font-bold tracking-tight text-gray-900 xl:text-2xl dark:text-white"
+						>
 							Tipp {i + 1}
 						</h5>
-						<p class="xl:text-xl text-base font-normal text-gray-700 dark:text-gray-400">{hint}</p>
+						<p class="text-base font-normal text-gray-700 xl:text-xl dark:text-gray-400">{hint}</p>
 					</div>
 				{/each}
 			</div>
 
 			{#if phase === PHASE.ANSWER}
-				<p class="mt-8 md:mt-2 text-center text-4xl">{answer}</p>
+				<p class="mt-8 text-center text-4xl md:mt-2">{answer}</p>
 			{/if}
 		</div>
 	{/if}
 
 	<button
 		on:click={sendMessage}
-		class="bottom-6 group fixed me-2 inline-flex w-xl cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 p-0.5 text-xl font-medium text-gray-900 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white focus:ring-4 focus:ring-pink-200 focus:outline-none dark:text-white dark:focus:ring-pink-800"
+		class="group fixed bottom-6 me-2 inline-flex w-xl cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 p-0.5 text-xl font-medium text-gray-900 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white focus:ring-4 focus:ring-pink-200 focus:outline-none dark:text-white dark:focus:ring-pink-800"
 	>
 		<span
 			class="relative w-xl rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-transparent dark:bg-gray-900 group-hover:dark:bg-transparent"
 		>
-			{phase === PHASE.START || phase === PHASE.ANSWER ? "Nächste Frage" : "Weiter"}
+			{phase === PHASE.START || phase === PHASE.ANSWER ? 'Nächste Frage' : 'Weiter'}
 		</span>
 	</button>
 
