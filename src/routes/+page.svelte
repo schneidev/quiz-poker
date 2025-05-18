@@ -81,7 +81,7 @@
 	}
 </script>
 
-<div class="mx-auto flex w-3/4 md:w-full flex-col items-center p-4">
+<div class="mx-auto flex md:w-3/4 w-full flex-col items-center p-4">
 	<h1 class="mb-4 font-extrabold text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
 		<span
 			class="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-8xl text-transparent"
@@ -117,10 +117,10 @@
 					<div
 						class="m-4 block w-1/3 max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800 "
 					>
-						<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+						<h5 class="mb-2 xl:text-2xl text-xl font-bold tracking-tight text-gray-900 dark:text-white">
 							Tipp {i + 1}
 						</h5>
-						<p class="text-xl font-normal text-gray-700 dark:text-gray-400">{hint}</p>
+						<p class="xl:text-xl text-base font-normal text-gray-700 dark:text-gray-400">{hint}</p>
 					</div>
 				{/each}
 			</div>
