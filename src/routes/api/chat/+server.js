@@ -1,21 +1,17 @@
 import { json } from '@sveltejs/kit';
-import fs from 'fs/promises';
-import path from 'path';
-
-const filePath = path.resolve('data/store.json');
+import { getActivatedAreas } from "$lib/areas"
+import { loadEntries, addEntry } from "$lib/entries"
 
 export async function POST({ request }) {
 	await request.json();
 
-    const raw = await fs.readFile(filePath, "utf-8");
-    let old_questions = JSON.parse(raw).entries;
-    console.log(old_questions)
+    const db_entries = await loadEntries()
 
-    const areas = ["Politik", "Gesselschaft", "Sport", "Wissenschaft", "Unnützes Wissen", "Ernährung", "Geographie", "Geschichte", "Kunst und Kultur", "Technik", "Musik", "Trivia", "Religion", "Gaming"]
+    const areas = await getActivatedAreas();
     const area = areas[Math.floor(Math.random() * areas.length)]
 
 	const prompt = `
-Du bist ein Quiz-Generator. Erstelle eine einzige Quizfrage aus dem Bereich ${area} die eine Schätzfrage ist. 
+Du bist ein Quiz-Generator. Erstelle eine einzige Quizfrage aus dem Bereich ${area.name} die eine Schätzfrage ist. 
 Die Fragen sollen schon etwas spezieller und schwieriger sein. Du sollst eine Frage, die Antwort und 3 dazugehörige Tipps geben, 
 dabei sollen die Tipps immer genauer zur Antwort hinführen, aber die Tipps sollen gezielt zur richtigen Antwort führen und keine
 Tipps geben die nichts mit der Antwort zu tun haben. Die Tipps sollen sich nicht wiederholen 
@@ -36,10 +32,8 @@ Gib die Ausgabe bitte im folgenden JSON-Format zurück:
 Antworte bitte nur mit JSON ohne Erklärungen.
 
 Folgende Fragen wurden schon verwendet und sollen nicht noch einmal verwendet werden:
-${old_questions}
+${db_entries}
 `;
-
-    console.log(prompt)
 
 	const res = await fetch('https://api.openai.com/v1/chat/completions', {
 		method: 'POST',
@@ -67,16 +61,11 @@ ${old_questions}
 	const data = await res.json();
 	let reply = data.choices?.[0]?.message?.content || 'No response';
     reply = JSON.parse(reply);
-    console.log(reply)
 
     if (reply !== 'No response') {
-        old_questions.push(reply.question)
-        await fs.writeFile(filePath, JSON.stringify({entries: old_questions}), "utf-8")
-
+        addEntry(reply.question)
         reply.area = area;
     }
-    
-    console.log(reply)
 
 	return json(reply);
 }
