@@ -1,5 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
+	import { Badge } from 'flowbite-svelte';
 	import CategoryPicker from '../components/CategoryPicker.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 	import Phase from '../components/Phase.svelte';
@@ -96,11 +97,7 @@
 				class="relative mx-auto block w-full rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 			>
 				{#if area !== ''}
-					<span
-						class="absolute -top-4 left-4 rounded-sm px-2.5 py-0.5 text-2xl font-semibold dark:bg-orange-200 dark:text-pink-500"
-					>
-						{area.name}
-					</span>
+					<Badge class="absolute -top-4 left-4 text-2xl bg-orange-200 text-pink-500">{ area.name }</Badge>
 				{/if}
 				<h5
 					class="mt-2 mb-2 text-center text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
