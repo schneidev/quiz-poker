@@ -1,6 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
-	import { Badge } from 'flowbite-svelte';
+	import { P, Card, Badge, Heading, Span, GradientButton, Progressbar } from 'flowbite-svelte';
 	import CategoryPicker from '../components/CategoryPicker.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 	import Phase from '../components/Phase.svelte';
@@ -17,34 +17,32 @@
 		ANSWER: 5
 	};
 
-	let phase = PHASE.START;
-	let progress = 0;
-	let loading = false;
+	let phase = $state(PHASE.START);
+	let progress = $state(0);
+	let loading = $state(false);
 	let interval;
 	const MAX_TIME = 5000;
 
-	let area = '';
-	let question = '';
-	let answer = '';
-	let hints = [];
+	let area = $state('');
+	('');
+	let question = $state('');
+	let answer = $state('');
+	let hints = $state([]);
 
 	async function sendMessage() {
 		if (phase === PHASE.START || phase === PHASE.ANSWER) {
-			startProgress();
+			interval = startProgress();
 			const res = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ areas: getAreas() })
 			});
 
-			const data = await res.json();
+			({ area, question, answer, hints } = await res.json());
 
-			area = data.area;
-			question = data.question;
-			answer = data.answer;
-			hints = data.hints;
-
-			stopProgress();
+			loading = false;
+			progress = 0;
+			clearInterval(interval);
 		}
 
 		phase += 1;
@@ -54,99 +52,72 @@
 	}
 
 	function startProgress() {
-		progress = 0;
 		loading = true;
-
-		const intervalTime = 20; // update every 100ms
-		const increment = 100 / (MAX_TIME / intervalTime); // % per tick
-
-		interval = setInterval(() => {
+		const interval = setInterval(() => {
 			if (progress < 100) {
-				progress += increment;
+				progress += 1;
 			} else {
 				clearInterval(interval);
 			}
-		}, intervalTime);
-	}
+		}, 60);
 
-	function stopProgress() {
-		clearInterval(interval);
-		progress = 100;
-		setTimeout(() => {
-			loading = false;
-			progress = 0;
-		}, 500); // small delay to show completion
+		return interval;
 	}
 </script>
 
-<div class="mx-auto flex w-full flex-col items-center p-4 md:w-3/4">
-	<h1 class="mb-4 font-extrabold text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-		<span
-			class="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-8xl text-transparent"
-		>
-			Quiz Poker
-		</span>
-	</h1>
+<div class="mx-auto flex w-full flex-col items-center overflow-hidden p-4 sm:w-3/4">
+	<Heading tag="h1" class="text-4xl md:text-8xl">
+		<Span gradient="pinkToOrange">Quiz Poker</Span>
+	</Heading>
 
-	<Phase {phase} />
 	{#if phase === PHASE.START}
 		<Rules />
 	{:else}
-		<div transition:fade class="mt-4 w-full flex-1 overflow-auto p-10">
-			<div
-				class="relative mx-auto block w-full rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-			>
+		<Phase {phase} />
+		<div transition:fade class="mt-4 w-full flex-1 overflow-hidden pt-4">
+			<Card class="relative max-w-full p-8">
 				{#if area !== ''}
-					<Badge class="absolute -top-4 left-4 text-2xl bg-orange-200 text-pink-500">{ area.name }</Badge>
-				{/if}
-				<h5
-					class="mt-2 mb-2 text-center text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
-				>
-					{question}
-				</h5>
-			</div>
-
-			<div class="mt-8 flex flex-row justify-center md:mt-0">
-				{#each hints.slice(0, phase - 1) as hint, i}
-					<div
-						class="m-4 block w-1/3 max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+					<Badge class="absolute -top-4 left-4 bg-orange-200 text-lg text-pink-500 md:text-2xl"
+						><strong>{area.name}</strong></Badge
 					>
-						<h5
-							class="mb-2 text-xl font-bold tracking-tight text-gray-900 xl:text-2xl dark:text-white"
-						>
-							Tipp {i + 1}
-						</h5>
-						<p class="text-base font-normal text-gray-700 xl:text-xl dark:text-gray-400">{hint}</p>
+				{/if}
+				<Heading tag="h2" class="text-center text-lg md:text-4xl">{question}</Heading>
+			</Card>
+
+			<div class="mt-4 grid grid-cols-1 gap-2 md:mt-8 md:grid-cols-3">
+				{#each hints.slice(0, phase - 1) as hint, i}
+					<div class="h-full w-full">
+						<Card class="p-4 h-full min-w-full">
+							<Heading tag="h5" class="text-base md:text-xl">
+								Tipp {i + 1}
+							</Heading>
+							<P class="text-sm md:text-lg">{hint}</P>
+						</Card>
 					</div>
 				{/each}
 			</div>
 
 			{#if phase === PHASE.ANSWER}
-				<p class="mt-8 text-center text-4xl md:mt-2">{answer}</p>
+				<Heading tag="h2" class="mt-8 text-center text-2xl md:text-4xl">{answer}</Heading>
 			{/if}
 		</div>
 	{/if}
 
-	<button
-		on:click={sendMessage}
-		class="group fixed bottom-6 me-2 inline-flex w-xl cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 p-0.5 text-xl font-medium text-gray-900 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white focus:ring-4 focus:ring-pink-200 focus:outline-none dark:text-white dark:focus:ring-pink-800"
+	<GradientButton
+		onclick={sendMessage}
+		outline
+		shadow
+		color="pinkToOrange"
+		class="fixed bottom-6 w-xl max-w-3/4 focus:outline-none"
 	>
-		<span
-			class="relative w-xl rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-transparent dark:bg-gray-900 group-hover:dark:bg-transparent"
+		<span class="text-2xl"
+			>{phase === PHASE.START || phase === PHASE.ANSWER ? 'Nächste Frage' : 'Weiter'}</span
 		>
-			{phase === PHASE.START || phase === PHASE.ANSWER ? 'Nächste Frage' : 'Weiter'}
-		</span>
-	</button>
+	</GradientButton>
 
 	{#if loading}
-		<div
-			transition:fade
-			class="fixed bottom-2 mx-10 h-2 w-3/4 overflow-hidden rounded-full bg-gray-300"
-		>
-			<div
-				class="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-pink-500 to-orange-400"
-				style="width: {progress}%"
-			></div>
+		<div class="fixed bottom-2 w-3/4">
+			<Progressbar animate="true" color="red" {progress} />
 		</div>
 	{/if}
 </div>
