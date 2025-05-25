@@ -47,8 +47,6 @@ Folgende Fragen sollen auf keinen Fall erneut vorkommen:
 ${questions}
 `;
 
-	console.log(prompt);
-
 	const res = await fetch("https://api.openai.com/v1/chat/completions", {
 		method: "POST",
 		headers: {
