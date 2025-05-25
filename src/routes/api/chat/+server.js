@@ -2,7 +2,10 @@ import { json } from "@sveltejs/kit";
 import prisma from "$lib/prisma";
 
 async function loadQuestions() {
-	const questions = await prisma.question.findMany();
+	const questions = await prisma.question.findMany({
+		orderBy: { id: "desc" },
+		take: 100
+	});
 	return { questions };
 }
 
