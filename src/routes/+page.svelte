@@ -7,6 +7,7 @@
 	import Rules from "../components/Rules.svelte";
 	import { get } from "svelte/store";
 	import { areas } from "$lib/state";
+	import { GithubSolid } from "flowbite-svelte-icons";
 
 	const PHASE = {
 		START: 0,
@@ -122,3 +123,8 @@
 </div>
 
 <Sidebar />
+<div class="fixed top-4 right-4 hidden md:block">
+	<a href="https://github.com/schneidev/quiz-poker" target="_blank"
+		><GithubSolid size="xl" class="fill-gray-400 hover:fill-gray-100" /></a
+	>
+</div>
