@@ -1,4 +1,14 @@
 import { json } from "@sveltejs/kit";
+import prisma from "$lib/prisma";
+
+async function loadQuestions() {
+	const questions = await prisma.question.findMany();
+	return { questions };
+}
+
+async function addQuestion(question) {
+	await prisma.question.create({ data: { text: question } });
+}
 
 export async function POST({ request }) {
 	const { areas } = await request.json();
@@ -8,6 +18,9 @@ export async function POST({ request }) {
 	if (filteredAreas.length > 0) {
 		area = filteredAreas[Math.floor(Math.random() * filteredAreas.length)];
 	}
+
+	let questions = (await loadQuestions()).questions;
+	questions = questions.map((q) => q.text).join("\n");
 
 	const prompt = `
 Du bist ein Quizmaster in einer Gameshow. Deine Aufgabe ist es zufällig Fragen aus dem Allgemeinwissen zu stellen. Achte dabei auf ein Standardformat.
@@ -30,7 +43,11 @@ Gib die Ausgabe bitte im folgenden JSON-Format zurück:
 }
 
 Antworte bitte nur mit JSON ohne Erklärungen.
+Folgende Fragen sollen auf keinen Fall erneut vorkommen:
+${questions}
 `;
+
+	console.log(prompt);
 
 	const res = await fetch("https://api.openai.com/v1/chat/completions", {
 		method: "POST",
@@ -58,6 +75,7 @@ Antworte bitte nur mit JSON ohne Erklärungen.
 
 	if (reply !== "No response") {
 		reply.area = area;
+		await addQuestion(reply.question);
 	}
 
 	return json(reply);
