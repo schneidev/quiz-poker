@@ -1,12 +1,12 @@
 <script>
-	import { fade } from 'svelte/transition';
-	import { P, Card, Badge, Heading, Span, GradientButton, Progressbar } from 'flowbite-svelte';
-	import CategoryPicker from '../components/CategoryPicker.svelte';
-	import Sidebar from '../components/Sidebar.svelte';
-	import Phase from '../components/Phase.svelte';
-	import Rules from '../components/Rules.svelte';
-	import { getAreas } from '$lib/state.svelte.js';
-	import { get } from 'svelte/store';
+	import { fade } from "svelte/transition";
+	import { P, Card, Badge, Heading, Span, GradientButton, Progressbar } from "flowbite-svelte";
+	import CategoryPicker from "../components/CategoryPicker.svelte";
+	import Sidebar from "../components/Sidebar.svelte";
+	import Phase from "../components/Phase.svelte";
+	import Rules from "../components/Rules.svelte";
+	import { get } from "svelte/store";
+	import { areas } from "$lib/state";
 
 	const PHASE = {
 		START: 0,
@@ -23,19 +23,18 @@
 	let interval;
 	const MAX_TIME = 5000;
 
-	let area = $state('');
-	('');
-	let question = $state('');
-	let answer = $state('');
+	let area = $state("");
+	let question = $state("");
+	let answer = $state("");
 	let hints = $state([]);
 
 	async function sendMessage() {
 		if (phase === PHASE.START || phase === PHASE.ANSWER) {
 			interval = startProgress();
-			const res = await fetch('/api/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ areas: getAreas() })
+			const res = await fetch("/api/chat", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ areas: $areas })
 			});
 
 			({ area, question, answer, hints } = await res.json());
@@ -76,7 +75,7 @@
 		<Phase {phase} />
 		<div transition:fade class="mt-4 w-full flex-1 overflow-hidden pt-4">
 			<Card class="relative max-w-full p-8">
-				{#if area !== ''}
+				{#if area !== ""}
 					<Badge class="absolute -top-4 left-4 bg-orange-200 text-lg text-pink-500 md:text-2xl"
 						><strong>{area.name}</strong></Badge
 					>
@@ -87,7 +86,7 @@
 			<div class="mt-4 grid grid-cols-1 gap-2 md:mt-8 md:grid-cols-3">
 				{#each hints.slice(0, phase - 1) as hint, i}
 					<div class="h-full w-full">
-						<Card class="p-4 h-full min-w-full">
+						<Card class="h-full min-w-full p-4">
 							<Heading tag="h5" class="text-base md:text-xl">
 								Tipp {i + 1}
 							</Heading>
@@ -111,7 +110,7 @@
 		class="fixed bottom-6 w-xl max-w-3/4 focus:outline-none"
 	>
 		<span class="text-2xl"
-			>{phase === PHASE.START || phase === PHASE.ANSWER ? 'Nächste Frage' : 'Weiter'}</span
+			>{phase === PHASE.START || phase === PHASE.ANSWER ? "Nächste Frage" : "Weiter"}</span
 		>
 	</GradientButton>
 

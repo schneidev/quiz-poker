@@ -1,11 +1,11 @@
 <script>
-	import { Tabs, TabItem } from 'flowbite-svelte';
+	import { Tabs, TabItem } from "flowbite-svelte";
 	import {
 		UserCircleSolid,
 		GridSolid,
 		AdjustmentsVerticalSolid,
 		ClipboardSolid
-	} from 'flowbite-svelte-icons';
+	} from "flowbite-svelte-icons";
 </script>
 
 <div class="mt-8 w-full md:w-3/4">

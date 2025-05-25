@@ -1,13 +1,16 @@
-import { json } from '@sveltejs/kit';
-import { getAreas } from "$lib/state.svelte.js"
+import { json } from "@sveltejs/kit";
 
 export async function POST({ request }) {
 	const { areas } = await request.json();
 
 	const filteredAreas = areas.filter((x) => x.activated);
-    const area = filteredAreas[Math.floor(Math.random() * filteredAreas.length)]
+	let area = { name: "Allgemeinwissen", activated: true };
+	if (filteredAreas.length > 0) {
+		area = filteredAreas[Math.floor(Math.random() * filteredAreas.length)];
+	}
 
 	const prompt = `
+Du bist ein Quizmaster in einer Gameshow. Deine Aufgabe ist es zufällig Fragen aus dem Allgemeinwissen zu stellen. Achte dabei auf ein Standardformat.
 Du bist ein Quiz-Generator. Erstelle eine einzige Quizfrage aus dem Bereich ${area.name} die eine Schätzfrage ist. 
 Die Fragen sollen schon etwas spezieller und schwieriger sein. Du sollst eine Frage, die Antwort und 3 dazugehörige Tipps geben, 
 dabei sollen die Tipps immer genauer zur Antwort hinführen, aber die Tipps sollen gezielt zur richtigen Antwort führen und keine
@@ -29,36 +32,33 @@ Gib die Ausgabe bitte im folgenden JSON-Format zurück:
 Antworte bitte nur mit JSON ohne Erklärungen.
 `;
 
-	const res = await fetch('https://api.openai.com/v1/chat/completions', {
-		method: 'POST',
+	const res = await fetch("https://api.openai.com/v1/chat/completions", {
+		method: "POST",
 		headers: {
 			Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
-			model: 'gpt-4o',
+			model: "gpt-4o",
 			messages: [
 				{
-					role: 'system',
-					content:
-						'Du bist ein Quizmaster in einer Gameshow. Deine Aufgabe ist es zufällig Fragen aus dem Allgemeinwissen zu stellen. Achte dabei auf ein Standardformat.',
-					role: 'user',
+					role: "user",
 					content: prompt
 				}
 			],
-            response_format: {type: "json_object" },
-            temperature: 0.7,
-            seed: Math.floor(Math.random() * 1000000000)
+			response_format: { type: "json_object" },
+			temperature: 0.7,
+			seed: Math.floor(Math.random() * 1000000000)
 		})
 	});
 
 	const data = await res.json();
-	let reply = data.choices?.[0]?.message?.content || 'No response';
-    reply = JSON.parse(reply);
+	let reply = data.choices?.[0]?.message?.content || "No response";
+	reply = JSON.parse(reply);
 
-    if (reply !== 'No response') {
-        reply.area = area;
-    }
+	if (reply !== "No response") {
+		reply.area = area;
+	}
 
 	return json(reply);
 }

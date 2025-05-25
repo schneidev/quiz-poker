@@ -1,5 +1,5 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fade } from "svelte/transition";
 
 	let { phase } = $props();
 
@@ -7,8 +7,8 @@
 		"flex md:w-full items-center dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700";
 	const deactivatedClass =
 		"flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700";
-	const activatedClassLast = 'flex items-center dark:text-blue-500';
-	const deactivatedClassLast = 'flex items-center';
+	const activatedClassLast = "flex items-center dark:text-blue-500";
+	const deactivatedClassLast = "flex items-center";
 </script>
 
 <div class="mt-8 mb-8 w-full">
