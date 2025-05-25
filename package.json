@@ -1,8 +1,8 @@
 {
 	"name": "quiz-poker",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
 	"scripts": {
 		"dev": "vite dev",
 		"host": "vite dev --host",
@@ -13,6 +13,8 @@
 		"lint": "prettier --check . && eslint .",
 		"postinstall": "prisma generate"
 	},
+	"keywords": [],
+	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
